@@ -1,0 +1,15 @@
+.navbar{
+    display: flex;
+    align-items: center;
+    gap: 30PX;
+   background-color: aliceblue;
+    color: rgb(12, 6, 6);
+    font-size: 25px;
+    font-weight: 600;
+    height: 8vh; 
+    cursor: pointer;
+  }
+  .navbar h5.active{
+    color: rgb(106, 95, 209);
+    font-weight: bold;
+  }
