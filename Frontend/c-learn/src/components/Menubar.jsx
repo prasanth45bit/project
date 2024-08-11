@@ -15,6 +15,7 @@ const Menubar = () => {
       axios.post('http://localhost:8081/getUserLevel', { userid: user.userid })
         .then(response => {
           setUserLevel(response.data.level);
+          console.log(response.data.level);
         })
         .catch(error => {
           console.error('Error fetching user level:', error);
@@ -34,7 +35,7 @@ const Menubar = () => {
     }
   };
 
-  const numberOfCheckedItems = level ? Math.min(level * 4, menuItems.length) : 0;
+  const numberOfCheckedItems = level ? Math.min(level, menuItems.length) : 0;
 
   return (
     <div className="responsive-menu">
