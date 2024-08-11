@@ -1,3 +1,18 @@
-body{
-    background-color: black;
+
+.Overview-screen
+{
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+.Home-screen
+{
+    width: 85%;
+    height: 100%;
+}
+
+.Menu-screen
+{
+    width: 15%;
+    height: 100%;
 }

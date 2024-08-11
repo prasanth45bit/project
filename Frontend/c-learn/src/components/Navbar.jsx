@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './Navbar.css';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 
 const Navbar = () => {
-  const [activeItem, setActiveItem] = useState('Overview');
+  const [activeItem, setActiveItem] = useState('overview');
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
 
   React.useEffect(() => {
-    const path = location.pathname;
-    if (path === '/') {
-      setActiveItem('Overview');
-    } else if (path === '/Exercise') {
-      setActiveItem('Exercise');
-    } else if (path === '/Trynow') {
-      setActiveItem('Try now');
+    const path = location.pathname.toLowerCase();
+    if (path.includes('/overview')) {
+      setActiveItem('overview');
+    } else if (path.includes('/exercise')) {
+      setActiveItem('exercise');
+    } else if (path.includes('/trynow')) {
+      setActiveItem('trynow');
     }
   }, [location]);
 
@@ -25,26 +27,34 @@ const Navbar = () => {
 
   return (
     <div className="responsive-menu">
-      <nav className="navbar">
-        <h5
-          className={activeItem === 'Overview' ? 'active' : ''}
-          onClick={() => handleItemClick('Overview', '/Overview')}
+      <div className="navbar">
+        <div
+          className={activeItem === 'overview' ? 'active' : ''}
+          onClick={() => handleItemClick('overview', '/home')}
         >
           Overview
-        </h5>
-        <h5
-          className={activeItem === 'Exercise' ? 'active' : ''}
-          onClick={() => handleItemClick('Exercise', '/Exercise')}
+        </div>
+        <div
+          className={activeItem === 'exercise' ? 'active' : ''}
+          onClick={() => handleItemClick('exercise', '/home/exercise')}
         >
           Exercise
-        </h5>
-        <h5
-          className={activeItem === 'Try now' ? 'active' : ''}
-          onClick={() => handleItemClick('Try now', '/Trynow')}
+        </div>
+        <div
+          className={activeItem === 'trynow' ? 'active' : ''}
+          onClick={() => handleItemClick('trynow', '/home/trynow')}
         >
           Try now
-        </h5>
-      </nav>
+        </div>
+        {/* <div className='userlogo'>
+        {user ? ( 
+          <p alt={user.name} onClick={() => navigate('profile')}>
+            PROFILE
+          </p>
+        ) : (''
+        )}
+        </div> */}
+      </div>
     </div>
   );
 };

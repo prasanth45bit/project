@@ -2,14 +2,33 @@
     display: flex;
     align-items: center;
     gap: 30PX;
-   background-color: aliceblue;
+    width: 100%;
+    background-color: aliceblue;
+    height: 100%;
     color: rgb(12, 6, 6);
     font-size: 25px;
     font-weight: 600;
-    height: 8vh; 
     cursor: pointer;
   }
   .navbar h5.active{
     color: rgb(106, 95, 209);
     font-weight: bold;
+  }
+
+  .userlogo {
+    margin-left: 4px; 
+    font-size:medium;
+  }
+  
+  .profile-picture {
+    width: 10px; 
+    height: 10px; 
+    border-radius: 50%;
+    object-fit: cover; 
+  }
+
+  @media (min-width: 500px) {
+    .userlogo {
+      margin-left: 1110px; 
+    }
   }

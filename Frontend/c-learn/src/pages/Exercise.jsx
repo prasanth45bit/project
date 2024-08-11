@@ -1,18 +1,25 @@
-import React from "react";
-import Menubar from "../components/Menubar";
-import Navbar from "../components/Navbar";
-import ExercisePage from "../components/Ex";
+import React, { useState } from 'react';
+import ContentMenu from '../components/ContentMenu';
+import ExerciseList from '../components/ExerciseList';
+import './Exercise.css';
 
 const Exercise = () => {
+  const [selectedContent, setSelectedContent] = useState(null);
 
-return(
-    <div>
-        <Menubar/>
-        <ExercisePage />
+  const handleSelectContent = (contentId) => {
+    setSelectedContent(contentId);
+  };
+
+  return (
+    <div className="app">
+      <div className='Exercise-menu' >
+          <ContentMenu onSelect={handleSelectContent} />
+        </div>
+      <div className='Exercise-page'>
+          {selectedContent && <ExerciseList contentId={selectedContent} />}
+      </div>
     </div>
-
-);
-
+  );
 };
 
 export default Exercise;
