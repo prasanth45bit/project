@@ -6,9 +6,6 @@ import Exercise from './Exercise';
 import Trynow from './Trynow';
 import Navbar from '../components/Navbar';
 import Profile from '../components/profile';
-import C_Home from '../Menupage/c-home';
-import C_Introduction from '../Menupage/c-introduction';
-import Menubar from '../components/Menubar';
 
 function Home() {
   return (
@@ -19,8 +16,8 @@ function Home() {
         <Routes>
           <Route path="/*" element={<Overview />} />
           <Route path="exercise/*" element={<Exercise />} />
-          <Route path="trynow" element={<Trynow />} />
-          {/* <Route path="profile" element={<Profile/>} /> */}
+          <Route path="trynow-page/*" element={<Trynow />} />
+          <Route path="profile/*" element={<Profile/>}/>
         </Routes>
       </div>
     </div>

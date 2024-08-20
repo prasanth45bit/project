@@ -5,21 +5,28 @@ import Submit from '../Menupage/Submit';
 import Finish from '../Menupage/Finish';
 import { AuthContext } from '../AuthContext';
 
-const ExerciseList = ({ contentId = 1 }) => {
+const ExerciseList = ({ contentId }) => {
   const [exercises, setExercises] = useState([]);
   const [inputValues, setInputValues] = useState({});
   const [results, setResults] = useState({});
+  const [level, setLevel] = useState();
   const [allCorrect, setAllCorrect] = useState(false);
   const { user, setUser } = useContext(AuthContext);
 
   useEffect(() => {
-    if (contentId) {
-      axios
-        .get(`http://localhost:8081/exercises/${contentId}`)
-        .then((response) => setExercises(response.data))
-        .catch((error) => console.error(error));
+    const storedLevel = localStorage.getItem('level');
+    if (storedLevel) {
+      setLevel(parseInt(storedLevel, 10)); 
     }
-  }, [contentId]);
+
+    if (contentId && user) {
+      console.log("user.level:", user.level);
+      console.log("contentId:", contentId);
+      axios.get(`http://localhost:8081/exercises/${contentId}`)
+        .then((response) => setExercises(response.data))
+        .catch((error) => console.error('Error fetching exercises:', error));
+    }
+  }, [contentId, user]);
 
   const handleInputChange = (exerciseId, inputIndex, event) => {
     setInputValues((prevValues) => ({
@@ -33,11 +40,7 @@ const ExerciseList = ({ contentId = 1 }) => {
 
   const handleSubmit = (exerciseId) => {
     const answers = inputValues[exerciseId] || {};
-    axios
-      .post(`http://localhost:8081/checkAnswer`, {
-        exerciseId,
-        answers,
-      })
+    axios.post('http://localhost:8081/checkAnswer', { exerciseId, answers })
       .then((response) => {
         const isCorrect = response.data.isCorrect;
         setResults((prevResults) => ({
@@ -51,30 +54,52 @@ const ExerciseList = ({ contentId = 1 }) => {
               results[exercise.exercise_id] === 'Correct' || exercise.exercise_id === exerciseId
           );
           if (allAnsweredCorrectly) {
-            setAllCorrect(true);
+            setAllCorrect(true); 
           }
         }
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.error('Error checking answer:', error));
   };
 
-  const handleFinish = () => {
-    if (user && user.userid) {
-      axios.post('http://localhost:8081/updateUserLevel', { userid: user.userid, level: user.level + 1 })
-        .then(response => {
-          const newLevel = response.data.newLevel;
-          setUser({ ...user, level: newLevel });
-          console.log(newLevel)
-        })
-        .catch(error => {
-          console.error('Error updating user level:', error);
+  const finishLevel = async () => {
+    try {
+      const userId = user.userid; 
+      const level = parseInt(localStorage.getItem('level'), 10); 
+      const contentLevel = contentId;  
+  
+      if (level < contentLevel) {
+        const response = await fetch('http://localhost:8081/updatelevel', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ level: contentLevel, userId }),
         });
+  
+        const result = await response.json();
+        alert(result.message);
+  
+        if (result.message.includes("Level updated successfully")) {
+          setLevel(contentLevel); 
+          localStorage.setItem('level', contentLevel); 
+        }
+      } else {
+        alert('You have already completed this level!');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred while updating the level.');
     }
   };
 
+  console.log("allCorrect:", allCorrect);
+  console.log("user.level:", level);
+  console.log("contentId:", contentId);
+
   return (
     <div className="exercise-list" style={{ width: '96%', height: '100%', padding: '0 2%' }}>
-      <h2>hiii</h2>
+      <h2>Exercises</h2>
+      {user && <h2 className="profile-name">{user.name} - Level: {level}</h2>}
       {exercises.map((exercise) => (
         <div key={exercise.exercise_id}>
           <ul>
@@ -83,7 +108,7 @@ const ExerciseList = ({ contentId = 1 }) => {
                 <div style={{ fontSize: '170%' }}>Exercise</div>
                 <div>Insert the missing part</div>
                 <div className="codeexer">
-                  <pre style={{ whiteSpace: 'pre-wrap' }}>  
+                  <pre style={{ whiteSpace: 'pre-wrap' }}>
                     {exercise.question_text.split('____').map((part, index) => (
                       <React.Fragment key={index}>
                         {part}
@@ -121,9 +146,9 @@ const ExerciseList = ({ contentId = 1 }) => {
           </ul>
         </div>
       ))}
-      {allCorrect && (
-        <div onClick={handleFinish}>
-          <Finish  />
+      {allCorrect && (  // Show Finish button only when all exercises are correct
+        <div onClick={finishLevel}>
+          <Finish />
         </div>
       )}
     </div>

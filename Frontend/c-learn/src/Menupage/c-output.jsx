@@ -1,18 +1,21 @@
-import Trybutton from './Trybutton'
-import Prebutton from './Previous'
+import Previous from './Previous'
 import Next from './Next'
 import React, { useContext, useState, useEffect } from 'react';
 import './All.css';
 import { AuthContext } from '../AuthContext';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import Example from './Example';
+import Question from './Question';
+import Exercise from './Exercise';
 
-const C_Output = () => {
+
+const C_Output = ({ contentId }) => {
+
   const { setUser } = useContext(AuthContext);
   const [program] = useState('Introduction');
   const [message, setMessage] = useState('');
   const [code, setCode] = useState('');
-  const [exerciseCode, setExerciseCode] = useState(''); 
+
 
 
   const handleProgram = async (ps) => {
@@ -34,20 +37,10 @@ const C_Output = () => {
   };
 
 
-  const fetchExercises = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8081/exercises/${program}`); 
-      if (response.data && response.data.length > 0) {
-        setExerciseCode(response.data[0].question_text);
-      }
-    } catch (error) {
-      console.error('Error fetching exercises:', error);
-    }
-  };
+  
 
   useEffect(() => {
     handleProgram({ program: 'Loops' });
-    fetchExercises();
   }, []);
 
   return (
@@ -59,17 +52,8 @@ const C_Output = () => {
         <div style={{fontSize:"40px"}}>Output</div>
         <div style={{fontSize: "21px"}}>To output values or print text in C, you can use the printf() function:</div>
          </div>
-         <div className='example'>
-                <div  style={{fontSize: "210%"}}>Example</div>
-                <div className='firstcode'>
-                <div style={{backgroundColor:"green",width:"0.2%",height:"100%"}}>
-                </div>
-                <div className='code'>
-                    <pre>{code}</pre>
-                </div>
-                </div> 
-                <Trybutton/>
-            </div>
+         <Example fontSize="210%" bgColor="green" barWidth="0.2%" code={code} />
+
 
             <div className='explanation'>
             <div style={{fontSize:"35px"}}>Double Quotes</div>
@@ -78,41 +62,26 @@ const C_Output = () => {
             <div style={{fontSize: '20px'}}> <li>If you forget the double quotes, an error occurs:</li></div>
             </div>
             </div>
-            <div className='example'>
-                <div  style={{fontSize: "210%"}}>Example</div>
-                <div className='firstcode'>
-                <div style={{backgroundColor:"green",width:"0.2%",height:"100%"}}>
-                </div>
-                <div className='code'>
-                    <pre>{code}</pre>
-                </div>
-                </div> 
-                <Trybutton/>
-            </div>
+            <Example fontSize="210%" bgColor="green" barWidth="0.2%" code={code} />
+
             <div className='explanation'>
             <div style={{fontSize:"35px"}}>Many printf Functions</div>
             <div className='line-one'>
             <div style={{fontSize: '20px'}}> <li> You can use as many<span style={{color:"red",fontWeight:"700"}}> printf()</span> functions as you want. However, note that it does not insert a new line at the end of the output  .</li></div>
             </div>
             </div>
-            <div className='example'>
-                <div  style={{fontSize: "210%"}}>Example</div>
-                <div className='firstcode'>
-                <div style={{backgroundColor:"green",width:"0.2%",height:"100%"}}>
-                </div>
-                <div className='code'>
-                   <pre>{code}</pre> 
-                </div>
-                </div> 
-                <Trybutton/>
+            <Example fontSize="210%" bgColor="green" barWidth="0.2%" code={code} />
+
                 <div className='example-explain'>
           <div>Click on the "Try it Yourself" button to see how it works.</div>
           <div>We recommend reading this tutorial, in the sequence listed in the left menu.</div>
         </div>
-            </div>
-            <div className="buttons">
-          <Prebutton />
-          <Next />
+        <Exercise contentId={contentId}/>
+
+        <Question contentId={contentId} />
+        <div className="buttons">
+          <Previous contentId={contentId} />
+          <Next contentId={contentId} />
         </div>
         </div>
     </div>

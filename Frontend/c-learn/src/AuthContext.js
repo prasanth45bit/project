@@ -11,9 +11,14 @@ export const AuthProvider = ({ children }) => {
   });
 
   useEffect(() => {
+    let activityTimeout;
+
     const handleActivity = () => {
-      const currentTime = Date.now();
-      localStorage.setItem('lastActivityTime', currentTime.toString());
+      clearTimeout(activityTimeout);
+      activityTimeout = setTimeout(() => {
+        const currentTime = Date.now();
+        localStorage.setItem('lastActivityTime', currentTime.toString());
+      }, 200);
     };
 
     window.addEventListener('mousemove', handleActivity);
@@ -23,12 +28,11 @@ export const AuthProvider = ({ children }) => {
 
     handleActivity();
 
-   
     const checkInactivity = setInterval(() => {
       const lastActivityTime = localStorage.getItem('lastActivityTime');
       const currentTime = Date.now();
 
-      if (lastActivityTime && currentTime - parseInt(lastActivityTime, 10) > 5 * 60 * 1000) {
+      if (lastActivityTime && currentTime - parseInt(lastActivityTime, 10) > 10 * 60 * 1000) {
         handleLogout();
       }
     }, 60 * 1000);
@@ -45,6 +49,7 @@ export const AuthProvider = ({ children }) => {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('level');
     localStorage.removeItem('lastActivityTime');
     navigate('/');
   };

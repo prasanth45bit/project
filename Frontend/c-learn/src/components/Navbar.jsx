@@ -5,9 +5,10 @@ import { AuthContext } from '../AuthContext';
 
 const Navbar = () => {
   const [activeItem, setActiveItem] = useState('overview');
-  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, handleLogout } = useContext(AuthContext);
+
 
   React.useEffect(() => {
     const path = location.pathname.toLowerCase();
@@ -15,8 +16,8 @@ const Navbar = () => {
       setActiveItem('overview');
     } else if (path.includes('/exercise')) {
       setActiveItem('exercise');
-    } else if (path.includes('/trynow')) {
-      setActiveItem('trynow');
+    } else if (path.includes('/trynow-page')) {
+      setActiveItem('trynow-page');
     }
   }, [location]);
 
@@ -25,6 +26,11 @@ const Navbar = () => {
     navigate(path);
   };
 
+  const Click = (path) => {
+    navigate(path);
+  };
+
+  
   return (
     <div className="responsive-menu">
       <div className="navbar">
@@ -41,19 +47,17 @@ const Navbar = () => {
           Exercise
         </div>
         <div
-          className={activeItem === 'trynow' ? 'active' : ''}
-          onClick={() => handleItemClick('trynow', '/home/trynow')}
+          className={activeItem === 'trynow-page' ? 'active' : ''}
+          onClick={() => handleItemClick('trynow-page', '/home/trynow-page')}
         >
           Try now
         </div>
-        {/* <div className='userlogo'>
-        {user ? ( 
-          <p alt={user.name} onClick={() => navigate('profile')}>
+        <button onClick={handleLogout}>Logout</button>
+        <div className='userlogo'>
+          <p alt={user.name} onClick={() => Click('/home/profile')}>
             PROFILE
           </p>
-        ) : (''
-        )}
-        </div> */}
+        </div>
       </div>
     </div>
   );

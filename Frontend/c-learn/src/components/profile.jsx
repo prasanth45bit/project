@@ -1,11 +1,11 @@
 // Profile.js
 import React, { useContext } from 'react';
-import { AuthContext } from '../AuthContext'; // Make sure the path is correct
+import { AuthContext } from '../AuthContext'; 
 import './profile.css';
 import { useNavigate } from 'react-router-dom';
 
 function Profile() {
-  const { user, setUser } = useContext(AuthContext); // Use AuthContext
+  const { user, setUser } = useContext(AuthContext); 
   const navigate = useNavigate();
 
   const handleLogout = () => {

@@ -4,7 +4,7 @@ import ExerciseList from '../components/ExerciseList';
 import './Exercise.css';
 
 const Exercise = () => {
-  const [selectedContent, setSelectedContent] = useState(null);
+  const [selectedContent, setSelectedContent] = useState(1);
 
   const handleSelectContent = (contentId) => {
     setSelectedContent(contentId);

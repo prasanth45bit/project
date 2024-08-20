@@ -16,7 +16,6 @@
   }
 
   .userlogo {
-    margin-left: 4px; 
     font-size:medium;
   }
   
@@ -25,10 +24,4 @@
     height: 10px; 
     border-radius: 50%;
     object-fit: cover; 
-  }
-
-  @media (min-width: 500px) {
-    .userlogo {
-      margin-left: 1110px; 
-    }
   }

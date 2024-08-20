@@ -4,7 +4,7 @@ import './Login.css';
 import { IoMdContact } from "react-icons/io";
 import axios from 'axios';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import {jwtDecode} from 'jwt-decode';  // Ensure correct import
+import {jwtDecode} from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 
 function Loginpage() {
@@ -14,75 +14,54 @@ function Loginpage() {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-  // Handle form submit for regular login
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8081/login', {
-        userid,
-        passwor,
-      });
-
-      console.log('Login response:', response.data); // Debugging
-
+      const response = await axios.post('http://localhost:8081/login', { userid, passwor });
       if (response.data.length > 0) {
-        const userData = { userid }; // Expand with more user data if needed
+        const userData = { userid };
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('lastActivityTime', Date.now().toString());
-
         navigate('/home');
       } else {
         setMessage('Wrong email/password combination!');
       }
     } catch (error) {
       setMessage('Error occurred during login');
-      console.error('Login error:', error); // Debugging
     }
   };
 
-  // Handle Google Login
   const handleGoogleSuccess = (credentialResponse) => {
     try {
       const decodedToken = jwtDecode(credentialResponse.credential);
-      console.log('Google Token Decoded:', decodedToken); // Debugging
-
       const userData = {
         userid: decodedToken.email,
         name: decodedToken.name,
         picture: decodedToken.picture,
       };
-
-      // Call your backend to verify and store Google user
       handleSubmitGoogle(userData);
     } catch (error) {
       setMessage('Failed to decode Google token');
-      console.error('Google token decode error:', error); // Debugging
     }
   };
 
-  // Handle Google Login submission to backend
   const handleSubmitGoogle = async (userData) => {
     try {
-      const response = await axios.post('http://localhost:8081/googlelogin', {
-        userid: userData.userid,
-      });
-
-      console.log('Google login response:', response.data); // Debugging
-
+      const response = await axios.post('http://localhost:8081/googlelogin', { userid: userData.userid });
       if (response.data.length > 0) {
+        userData.level = response.data[0].level; 
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('lastActivityTime', Date.now().toString());
-
+        localStorage.setItem('level', response.data[0].level);
         navigate('/home');
       } else {
         setMessage('Google login failed!');
       }
     } catch (error) {
       setMessage('Error occurred during Google login');
-      console.error('Google login error:', error); // Debugging
     }
   };
 
@@ -125,7 +104,6 @@ function Loginpage() {
               onSuccess={handleGoogleSuccess}
               onError={() => {
                 setMessage('Google login failed!');
-                console.log('Google Login Failed'); // Debugging
               }}
             />
             {message && <p>{message}</p>}

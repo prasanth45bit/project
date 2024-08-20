@@ -5,8 +5,13 @@ import Previous from './Previous';
 import { AuthContext } from '../AuthContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import candcpp from '../Assets/ccppp.jpg';
+import Exercise from './Exercise';
 
-export const C_Introduction = () => {
+
+export const C_Introduction = ({ contentId }) => {
+  
+
   const { setUser } = useContext(AuthContext);
   const [program] = useState('Introduction');
   const [message, setMessage] = useState('');
@@ -14,6 +19,8 @@ export const C_Introduction = () => {
   const [nextPath, setNextPath] = useState('');
   const [previousPath, setPreviousPath] = useState('');
   const navigate = useNavigate();
+
+
 
   const handleProgram = async (ps) => {
     try {
@@ -63,8 +70,9 @@ export const C_Introduction = () => {
         </div>
         <div className='difference'>
           <div style={{ fontSize: "40px" }}>Difference between C and C++</div>
-          <div style={{ display: 'flex', width: '100%' }}>
-            <div style={{ justifyContent: 'center', display: 'flex', width: '40%', height: '100%' }}>
+          <div style={{ display: 'flex', width: '100%',alignItems:'center' }}>
+            <div style={{ display: 'flex', width: '45%', height: '100%' }}>
+              <img style={{width:'100%', justifyContent:'center'}} src={candcpp} />
             </div>
             <div className='c-cpp'>
               <div> <li>C++ was developed as an extension of C, and both languages have almost the same syntax</li></div>
@@ -72,9 +80,10 @@ export const C_Introduction = () => {
             </div>
           </div>
         </div>
+        <Exercise contentId={contentId}/>
         <div className="buttons">
-          <Previous />
-          <Next />
+          <Previous contentId={contentId} />
+          <Next contentId={contentId} />
         </div>
       </div>
     </div>

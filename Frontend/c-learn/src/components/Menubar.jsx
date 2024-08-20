@@ -1,37 +1,45 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../AuthContext';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Menubar.css';
 
 const Menubar = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const [level, setLevel] = useState();
+  const [activeIndex, setActiveIndex] = useState(null);
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
-  const [level, setUserLevel] = useState(null);
 
   useEffect(() => {
-    if (user && user.userid) {
-      axios.post('http://localhost:8081/getUserLevel', { userid: user.userid })
-        .then(response => {
-          setUserLevel(response.data.level);
-          console.log(response.data.level);
-        })
-        .catch(error => {
-          console.error('Error fetching user level:', error);
-        });
+    const storedLevel = localStorage.getItem('level');
+    if (storedLevel) {
+      setLevel(parseInt(storedLevel, 10));
     }
-  }, [user]);
 
-  useEffect(() => {
     axios.get('http://localhost:8081/menu')
       .then(response => setMenuItems(response.data))
       .catch(error => console.error('Error fetching menu:', error));
   }, []);
 
-  const handleNavigation = (path, isUnlocked) => {
-    if (isUnlocked) {
-      navigate(`${path}`);
+  const toggleMenu = (index, menu_content_path, isNavigable, hasOptions) => {
+    if (isNavigable) {
+      if (activeIndex === index) {
+        setActiveIndex(null);
+      } else {
+        setActiveIndex(index);
+      }
+
+      if (!hasOptions) {
+        navigate(menu_content_path);
+      }
+    }
+  };
+
+  const handleNavigation = (path, isNavigable) => {
+    if (isNavigable) {
+      console.log(`Navigating to: ${path}`);
+      navigate(path);
     }
   };
 
@@ -39,21 +47,22 @@ const Menubar = () => {
 
   return (
     <div className="responsive-menu">
-      <div className='menu-bar'>
+      <div>
         <h2>Course Content</h2>
         {user && <h2 className="profile-name">{user.name} - Level: {level}</h2>}
-        <div>
-          {menuItems.map((item, index) => {
-            const isUnlocked = index < numberOfCheckedItems;
-            return (
+        {menuItems.map((item, index) => {
+          const isUnlocked = index < numberOfCheckedItems;
+          const isNavigable = isUnlocked || index === numberOfCheckedItems;
+          const hasOptions = item.options && item.options.length > 0;
+
+          return (
+            <div key={item.menu_content_id}>
               <div
-                className={`menu-li ${isUnlocked ? '' : 'disabled'}`}
-                key={item.menu_content_id}
-                onClick={() => handleNavigation(item.menu_content_path, isUnlocked)}
+                onClick={() => toggleMenu(index, item.menu_content_path, isNavigable, hasOptions)}
                 style={{
-                  marginBottom: '10px',
-                  cursor: isUnlocked ? 'pointer' : 'not-allowed',
-                  color: isUnlocked ? 'black' : 'grey'
+                  cursor: isNavigable ? 'pointer' : 'not-allowed',
+                  padding: '10px',
+                  color: isNavigable ? 'black' : 'grey',
                 }}
               >
                 <input
@@ -62,24 +71,29 @@ const Menubar = () => {
                   readOnly
                   style={{ marginRight: '10px' }}
                 />
-                <div>
-                  {item.menu_content_name}
-                </div>
+                {item.menu_content_name}
               </div>
-            );
-          })}
-        </div>
+              {activeIndex === index && hasOptions && (
+                <div className='menu-bar' style={{ backgroundColor: '#f9f9f9' }}>
+                  {item.options.map((option, optIndex) => (
+                    <div
+                      key={optIndex}
+                      style={{
+                        padding: '5px 0',
+                        cursor: isNavigable ? 'pointer' : 'not-allowed',
+                        color: isNavigable ? 'black' : 'grey'
+                      }}
+                      onClick={() => handleNavigation(option.path, isNavigable)}
+                    >
+                      {option.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
-
-      <Routes>
-        {menuItems.map(item => (
-          <Route
-            key={item.menu_content_id}
-            path={`/${item.menu_content_path}`}
-            element={<div>{item.menu_content_name} Content</div>}
-          />
-        ))}
-      </Routes>
     </div>
   );
 };
