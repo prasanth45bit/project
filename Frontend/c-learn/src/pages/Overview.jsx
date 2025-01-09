@@ -52,8 +52,6 @@ const Overview = () => {
 
 
           <Route path="trynow-page" element={<Trynow />} />
-
-
           <Route path="/" element={<C_Home contentId={1}/>} />
           <Route path="c-home" element={<C_Home contentId={1}/>} />
           <Route path="c-introduction" element={<C_Introduction contentId={2}/>} />
